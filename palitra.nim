@@ -1,5 +1,6 @@
 #[
-    A simple desktop app enabling input of different Latin symbols I need daily (and nightly).
+    A simple desktop app enabling input of different Unicode symbols I need daily
+    (and nightly), especially for my Serbian/Croatian project.
     It uses NiGui as its Nim GUI library.
     Also it provides a wonderful example of what the 'capture' command is needed for.
 ]#
@@ -7,12 +8,24 @@
 import nigui, sequtils, strutils, sugar, unicode
 
 let textlist = [
-    "aàáȁȃâãäåæāăąɐɑɒʌçćĉċčɕďđðèéȅȇêëēĕėęěɛəɘɜ",
+    "àáȁȃâãäåæāăąɐɑɒʌçćĉċčɕďđðèéȅȇêëēĕėęěɛəɘɜ",
     "ɸĝğġģɢɣĥħɦìíȉȋîïĩīĭįıɨɪĵʝɟķĺļľłʎʟñńņňŋɲɴ",
     "òóȍȏôõöøōŏőœȯɵŕŗřɹɾʀʁßśŝşšșʂʃťþθ",
-    "ùúȕȗûüũūŭůűųʉʊʋʍɯɰχýÿŷɥʏźżžʐʑʒ"
+    "ùúȕȗûüũūŭůűųʉʊʋʍɯɰχýÿŷɥʏźżžʐʑʒ",
+    "ђјљњћџѣꙓꚜ±¦"
 ]
 var texts = textlist.join.toRunes # seq of unicode symbols we want to be able to input
+
+# cirvumventing the problem with Turkish/Azerbaijani ı and İ
+proc toLowerCustom(r: Rune): Rune =
+    if r == "İ".toRunes[0]:
+        return "ı".toRunes[0]
+    return r.toLower
+
+proc toUpperCustom(r: Rune): Rune =
+    if r == "ı".toRunes[0]:
+        return "İ".toRunes[0]
+    return r.toUpper
 
 proc captureAndClick(i: int, but: Button, area: TextArea) =
     # when creating or modifying a button, we teach it to add a symbol to the text area
@@ -22,10 +35,10 @@ proc captureAndClick(i: int, but: Button, area: TextArea) =
 proc toggleCase(buttons: seq[Button], textPlace: TextArea, toggleBut: Button) =
     # by this we modify functioning of all the buttons, including the toggling one
     if texts[0].isUpper:
-        texts = texts.map(toLower)
+        texts = texts.map(toLowerCustom)
         toggleBut.text = "lower"
     else:
-        texts = texts.map(toUpper)
+        texts = texts.map(toUpperCustom)
         toggleBut.text = "UPPER"
     for i, but in buttons:
         captureAndClick(i, but, textPlace)
@@ -52,7 +65,6 @@ for but in butSeq:
         countH += 1
     else:
         countW += 1
-
 if countW > 0:
     countW = 0
     countH += 1
