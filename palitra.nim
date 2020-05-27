@@ -10,21 +10,21 @@ import nigui, sequtils, strutils, sugar, unicode
 let textlist = [
     "àáȁȃâãäåæāăąɐɑɒʌçćĉċčɕďđðèéȅȇêëēĕėęěɛəɘɜ",
     "ɸĝğġģɢɣĥħɦìíȉȋîïĩīĭįıɨɪĵʝɟķĺļľłʎʟñńņňŋɲɴ",
-    "òóȍȏôõöøōŏőœȯɵŕŗřɹɾʀʁßśŝşšșʂʃťþθ",
+    "òóȍȏôõöøōŏőœȯɵŕŗřɹɾʀʁßśŝşšșʂʃťțþθ",
     "ùúȕȗûüũūŭůűųʉʊʋʍɯɰχýÿŷɥʏźżžʐʑʒ",
     "ђјљњћџѣꙓꚜ±¦"
 ]
 var texts = textlist.join.toRunes # seq of unicode symbols we want to be able to input
 
-# cirvumventing the problem with Turkish/Azerbaijani ı and İ
+# circumventing the problem with Turkish/Azerbaijani ı and İ
 proc toLowerCustom(r: Rune): Rune =
-    if r == "İ".toRunes[0]:
-        return "ı".toRunes[0]
+    if r == "İ".runeAt(0):
+        return "ı".runeAt(0)
     return r.toLower
 
 proc toUpperCustom(r: Rune): Rune =
-    if r == "ı".toRunes[0]:
-        return "İ".toRunes[0]
+    if r == "ı".runeAt(0):
+        return "İ".runeAt(0)
     return r.toUpper
 
 proc captureAndClick(i: int, but: Button, area: TextArea) =
@@ -32,16 +32,17 @@ proc captureAndClick(i: int, but: Button, area: TextArea) =
     capture i: # this thing gets value of i inside of the block. otherwise the program doesn't work
         but.onClick = proc(event: ClickEvent) = area.addText($texts[i])
 
-proc toggleCase(buttons: seq[Button], textPlace: TextArea, toggleBut: Button) =
+proc toggleCase(buttons: seq[Button], area: TextArea, toggleBut: Button) =
     # by this we modify functioning of all the buttons, including the toggling one
-    if texts[0].isUpper:
-        texts = texts.map(toLowerCustom)
-        toggleBut.text = "lower"
-    else:
+    if texts[0].isLower:
         texts = texts.map(toUpperCustom)
         toggleBut.text = "UPPER"
+    else:
+        texts = texts.map(toLowerCustom)
+        toggleBut.text = "lower"
+
     for i, but in buttons:
-        captureAndClick(i, but, textPlace)
+        captureAndClick(i, but, area)
 
 app.init()
 
