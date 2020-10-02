@@ -9,13 +9,16 @@
     and also to exercise my Nim skills a bit.
 ]#
 
-import os, times, regex, strutils
+import math, os, regex, strformat, strutils, times
 
 proc decipher(file: string): string =
+    const 
+        ceilingNumber = 700_000 # bytes
+        oneGB = 1024^3 # bytes
     let 
-        pathsplit = file.splitPath
-        filename = pathsplit.tail.replace(re"^[\!\+\-]+\s", "")
-        filepath = pathsplit.head
+        splittedPath = file.splitPath
+        filename = splittedPath.tail.replace(re"^[\!\+\-]+\s", "")
+        filepath = splittedPath.head
         #[
             filename column goes before path column in our csv.
             replace() is used to delete signs my friend uses to mark unread,
@@ -24,8 +27,8 @@ proc decipher(file: string): string =
 
         time = file.getLastModificationTime.local.format("yyyy'.'MM'.'dd")
 
-        filesize = file.getFileSize + 700_000
-        gigs = formatFloat(filesize.float / 1_073_741_824, ffDecimal, 3) & " GB"
+        filesize = file.getFileSize + ceilingNumber
+        gigs = "{formatFloat(filesize.float / oneGB.float, ffDecimal, 3)} GB".fmt
         #[
             file size in GB plus a little bit of forced ceiling.
             probably you will find a better way.
@@ -33,7 +36,7 @@ proc decipher(file: string): string =
             as well as by other data!
         ]#
 
-    return "\"" & filename & "\",\"" & filepath & "\",\"" & time & "\",\"" & gigs & "\"\n"
+    return "\"{filename}\",\"{filepath}\",\"{time}\",\"{gigs}\"\n".fmt
 
 var text = "\"NAME\",\"CATALOG\",\"DATE\",\"SIZE\"\n"
 
@@ -41,4 +44,5 @@ for obj in absolutePath("").walkDirRec:
     text &= decipher(obj)
 
 let outputFile = absolutePath("").split(DirSep)[^1] & ".csv"
+# last element of the splitted abspath: 'work.csv' for '/home/user/work'
 writeFile(outputFile, text)
