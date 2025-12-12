@@ -14,6 +14,7 @@ const
     fstr = "dd-MM-yyyy"
     f = initTimeFormat fstr
     X = "▇"
+    AVG_MONTH_LEN = 30.4375
 
 let params = commandLineParams()
 var dates: seq[DateTime] = @[]
@@ -98,7 +99,7 @@ var remove = Order(
 var length = Order(
     comment: "output how many months and how many cycles are recorded",
     f: proc(_:string="") =
-        let timeInt = int inDays(dates[^1] - dates[0]).float / 30.4375
+        let timeInt = int inDays(dates[^1] - dates[0]).float / AVG_MONTH_LEN
         echo &"{timeInt} months, {dates.len} cycles"
 )
 
