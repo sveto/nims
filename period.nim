@@ -83,12 +83,7 @@ var next = Order(
             else: parseInt qDigits
         let l = dates[^1]
 
-        # considering a summer maxi-cycle
-        let y = now().year
-        if cycles == 1 and parseDate(&"26-06-{y}") < l and l < parseDate(&"14-07-{y}"):
-            echo "supposedly", strDate l + 55.days
-        else:
-            echo strDate l + days toInt round (cycles.float * getAvg())
+        echo strDate l + days toInt round (cycles.float * getAvg())
 )
 
 var remove = Order(
